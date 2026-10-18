@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sama cours</title>
+    <style>
+        :root {
+            --primary: #1a5276;
+            --secondary: #2980b9;
+            --bg: #f4f6f7;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+            --accent: #27ae60;
+            --danger: #c0392b;
+            --warning: #d68910;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding-bottom: 40px;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 0.5rem;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 3px;
+        }
+
+        header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin: 15px 0 8px 0;
+            font-weight: bold;
+        }
+
+        /* 1. Sélection de la matière */
+        .subject-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid var(--secondary);
+            background: white;
+            color: var(--primary);
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background: var(--secondary);
+            color: white;
+        }
+
+        /* 2. Sélection de la classe */
+        .class-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+        }
+
+        .class-btn {
+            flex: 1;
+            min-width: 70px;
+            padding: 8px;
+            border: 1px solid var(--secondary);
+            background: white;
+            color: var(--primary);
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .class-btn.active {
+            background: var(--secondary);
+            color: white;
+        }
+
+        /* 3. Sélection Leçon / Exercice */
+        .type-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .type-btn {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #7f8c8d;
+            background: white;
+            color: #7f8c8d;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .type-btn.active {
+            background: #7f8c8d;
+            color: white;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            margin-bottom: 15px;
+            color: var(--primary);
+            font-size: 1.2rem;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 8px;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            gap: 10px;
+        }
+
+        .item-row:last-child {
+            border-bottom: none;
+        }
+
+        .item-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-add {
+            background: var(--accent);
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+
+        input[type="text"],
+        input[type="file"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 0.95rem;
+        }
+
+        textarea {
+            height: 130px;
+            resize: vertical;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 15px;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 650px;
+            max-height: 85vh;
+            border-radius: 10px;
+            padding: 25px;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 12px;
+            right: 18px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #777;
+            font-weight: bold;
+        }
+
+        .modal-body {
+            line-height: 1.7;
+            white-space: pre-wrap;
+            font-size: 1.05rem;
+            margin-top: 15px;
+            color: #444;
+        }
+
+        .modal-body img {
+            max-width: 100%;
+            height: auto;
+            margin: 15px 0;
+            border-radius: 6px;
+            display: block;
+        }
+
+        .empty-msg {
+            color: #777;
+            font-style: italic;
+            text-align: center;
+            padding: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>sama cours</h1>
+        <p>Ton espace de révision et de cours interactifs</p>
+    </header>
+
+    <div class="container">
+
+        <!-- 1. Choix de la matière -->
+        <div class="section-title">1. Choisis la matière :</div>
+        <div class="subject-tabs">
+            <button class="tab-btn active" onclick="setMatiere('Maths', event)">📐 Mathématiques</button>
+            <button class="tab-btn" onclick="setMatiere('PC', event)">🧪 Physique-Chimie</button>
+            <button class="tab-btn" onclick="setMatiere('SVT', event)">🌿 SVT</button>
+        </div>
+
+        <!-- 2. Choix de la classe -->
+        <div class="section-title">2. Choisis la classe :</div>
+        <div class="class-selector">
+            <button class="class-btn active" onclick="setClasse('6eme', event)">6ème</button>
+            <button class="class-btn" onclick="setClasse('5eme', event)">5ème</button>
+            <button class="class-btn" onclick="setClasse('4eme', event)">4ème</button>
+            <button class="class-btn" onclick="setClasse('3eme', event)">3ème</button>
+        </div>
+
+        <!-- 3. Choix Leçon / Exercice -->
+        <div class="type-selector">
+            <button class="type-btn active" onclick="setType('lecon', event)">📖 Leçons</button>
+            <button class="type-btn" onclick="setType('exercice', event)">✍️ Exercices & Devoirs</button>
+        </div>
+
+        <!-- 4. Affichage de la liste -->
+        <div class="card">
+            <h3 id="titre-section">Liste des cours</h3>
+            <div id="liste-contenu"></div>
+        </div>
+
+        <!-- 5. Formulaire d'ajout ou de modification -->
+        <div class="card">
+            <h3 id="form-title">➕ Ajouter un nouveau cours / exercice</h3>
+            <input type="hidden" id="edit-index" value="-1">
+
+            <label style="font-size: 0.9rem; font-weight: bold; color: #555;">Titre :</label>
+            <input type="text" id="custom-title" placeholder="Ex: Le système nerveux">
+
+            <label style="font-size: 0.9rem; font-weight: bold; color: #555;">Sélectionner une image (schéma) :</label>
+            <input type="file" id="custom-image-file" accept="image/*">
+
+            <label style="font-size: 0.9rem; font-weight: bold; color: #555;">Contenu (Leçon ou Devoir) :</label>
+            <textarea id="custom-content" placeholder="Colle ton texte ici..."></textarea>
+
+            <button class="btn btn-add" id="btn-save-text" onclick="enregistrerOuModifier()">Enregistrer</button>
+            <button class="btn btn-warning" id="btn-cancel-edit" onclick="annulerModification()"
+                style="display:none; width:100%; margin-top:5px;">Annuler la modification</button>
+        </div>
+
+    </div>
+
+    <!-- Fenêtre Modale pour lire en grand -->
+    <div class="modal" id="reader-modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="fermerModal()">&times;</span>
+            <h2 id="modal-title" style="color: var(--primary); padding-right: 30px;"></h2>
+            <div id="modal-body" class="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentMatiere = 'Maths';
+        let currentClass = '6eme';
+        let currentType = 'lecon';
+
+        // Données par défaut pour démarrer
+        const defaultData = {
+            "Maths": {
+                "6eme": {
+                    "lecon": [
+                        { title: "Les 3 opérations de base", content: "1. L'addition (+) : permet de calculer une somme.\n2. La soustraction (-) : permet de calculer une différence.\n3. La multiplication (×) : permet de calculer un produit.", image: "" }
+                    ],
+                    "exercice": [
+                        { title: "Devoir : Opérations simples", content: "Calcule les opérations :\n1. 15 + 23 = ?\n2. 56 - 12 = ?", image: "" }
+                    ]
+                }
+            }
+        };
+
+        function chargerContenu() {
+            const nomMatiere = currentMatiere === 'Maths' ? 'Mathématiques' : (currentMatiere === 'PC' ? 'Physique-Chimie' : 'SVT');
+            const nomType = currentType === 'lecon' ? 'Leçons' : 'Exercices / Devoirs';
+            document.getElementById('titre-section').innerText = `${nomType} de ${nomMatiere} - ${currentClass.toUpperCase()}`;
+
+            const container = document.getElementById('liste-contenu');
+            container.innerHTML = '';
+
+            const storageKey = `samaschool_${currentMatiere}_${currentClass}_${currentType}`;
+            const savedItems = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+            let defaultList = [];
+            try {
+                defaultList = defaultData[currentMatiere][currentClass][currentType] || [];
+            } catch (e) {
+                defaultList = [];
+            }
+
+            const allItems = [...defaultList, ...savedItems];
+
+            if (allItems.length === 0) {
+                container.innerHTML = '<div class="empty-msg">Aucun élément disponible. Ajoute le tien ci-dessous !</div>';
+                return;
+            }
+
+            allItems.forEach((item, index) => {
+                const isCustom = index >= defaultList.length;
+                const customIndex = index - defaultList.length;
+
+                const div = document.createElement('div');
+                div.className = 'item-row';
+                div.innerHTML = `
+                  <span class="item-title">${item.title}</span>
+                  <div class="btn-group">
+                    <button class="btn" onclick="ouvrirModal('${item.title.replace(/'/g, "\\'")}', \`${(item.content || '').replace(/`/g, "\\`")}\`, '${item.image || ''}')">Ouvrir</button>
+                    ${isCustom ? `
+                      <button class="btn btn-warning" onclick="preparerModification(${customIndex}, '${item.title.replace(/'/g, "\\'")}', \`${(item.content || '').replace(/`/g, "\\`")}\`, '${item.image || ''}')">Modifier</button>
+                      <button class="btn btn-danger" onclick="supprimerItem(${customIndex})">Supprimer</button>
+                    ` : ''}
+                  </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function setMatiere(matiere, event) {
+            currentMatiere = matiere;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            annulerModification();
+            chargerContenu();
+        }
+
+        function setClasse(classe, event) {
+            currentClass = classe;
+            document.querySelectorAll('.class-btn').forEach(b => b.classList.remove('active'));
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            annulerModification();
+            chargerContenu();
+        }
+
+        function setType(type, event) {
+            currentType = type;
+            document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            annulerModification();
+            chargerContenu();
+        }
+
+        function ouvrirModal(titre, contenu, image) {
+            document.getElementById('modal-title').innerText = titre;
+            let bodyHTML = '';
+            if (image && image.trim() !== '') {
+                bodyHTML += `<img src="${image}" alt="Schéma du cours">`;
+            }
+            bodyHTML += `<div>${contenu}</div>`;
+            document.getElementById('modal-body').innerHTML = bodyHTML;
+            document.getElementById('reader-modal').style.display = 'flex';
+        }
+
+        function fermerModal() {
+            document.getElementById('reader-modal').style.display = 'none';
+        }
+
+        function enregistrerOuModifier() {
+            const titre = document.getElementById('custom-title').value.trim();
+            const contenu = document.getElementById('custom-content').value.trim();
+            const fileInput = document.getElementById('custom-image-file');
+            const editIndex = parseInt(document.getElementById('edit-index').value);
+
+            if (!titre || !contenu) {
+                alert("Veuillez remplir le titre et le contenu !");
+                return;
+            }
+
+            const storageKey = `samaschool_${currentMatiere}_${currentClass}_${currentType}`;
+            let savedItems = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+            const sauvegarderDonnees = (imageUrl) => {
+                let existingImage = imageUrl;
+                if (!existingImage && editIndex !== -1) {
+                    existingImage = savedItems[editIndex].image || "";
+                }
+
+                if (editIndex === -1) {
+                    savedItems.push({ title: titre, content: contenu, image: existingImage });
+                    alert("Élément ajouté avec succès !");
+                } else {
+                    savedItems[editIndex] = { title: titre, content: contenu, image: existingImage };
+                    alert("Mise à jour effectuée avec succès !");
+                    annulerModification();
+                }
+
+                localStorage.setItem(storageKey, JSON.stringify(savedItems));
+                document.getElementById('custom-title').value = '';
+                document.getElementById('custom-image-file').value = '';
+                document.getElementById('custom-content').value = '';
+                chargerContenu();
+            };
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    sauvegarderDonnees(e.target.result);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                sauvegarderDonnees("");
+            }
+        }
+
+        function preparerModification(index, titre, contenu, image) {
+            document.getElementById('edit-index').value = index;
+            document.getElementById('custom-title').value = titre;
+            document.getElementById('custom-content').value = contenu;
+            document.getElementById('form-title').innerText = "✏️ Modifier cet élément";
+            document.getElementById('btn-save-text').innerText = "Mettre à jour";
+            document.getElementById('btn-cancel-edit').style.display = "block";
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        function annulerModification() {
+            document.getElementById('edit-index').value = -1;
+            document.getElementById('custom-title').value = '';
+            document.getElementById('custom-image-file').value = '';
+            document.getElementById('custom-content').value = '';
+            document.getElementById('form-title').innerText = "➕ Ajouter un nouveau cours / exercice";
+            document.getElementById('btn-save-text').innerText = "Enregistrer";
+            document.getElementById('btn-cancel-edit').style.display = "none";
+        }
+
+        function supprimerItem(index) {
+            if (confirm("Voulez-vous vraiment supprimer cet élément ?")) {
+                const storageKey = `samaschool_${currentMatiere}_${currentClass}_${currentType}`;
+                let savedItems = JSON.parse(localStorage.getItem(storageKey)) || [];
+                savedItems.splice(index, 1);
+                localStorage.setItem(storageKey, JSON.stringify(savedItems));
+                annulerModification();
+                chargerContenu();
+            }
+        }
+
+        // Chargement initial
+        chargerContenu();
+    </script>
+</body>
+
+</html>
